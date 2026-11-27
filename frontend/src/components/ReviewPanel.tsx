@@ -1,14 +1,17 @@
 import { useState } from "react";
 
 import type { ReviewDecision, ReviewPayload } from "../types";
+import { withCode } from "./inlineCode";
 
 interface Props {
   payload: ReviewPayload;
   onSubmit: (d: ReviewDecision) => void;
   busy?: boolean;
+  /** False when there is no repository to write tests into, as in the browser demo. */
+  canApplyTests?: boolean;
 }
 
-export function ReviewPanel({ payload, onSubmit, busy }: Props) {
+export function ReviewPanel({ payload, onSubmit, busy, canApplyTests = true }: Props) {
   const s = payload.summary;
   const [title, setTitle] = useState(s?.title ?? "");
   const [note, setNote] = useState("");
@@ -59,7 +62,7 @@ export function ReviewPanel({ payload, onSubmit, busy }: Props) {
           {s.changes && (
             <ul className="changes">
               {s.changes.map((c) => (
-                <li key={c}>{c}</li>
+                <li key={c}>{withCode(c)}</li>
               ))}
             </ul>
           )}
@@ -79,7 +82,11 @@ export function ReviewPanel({ payload, onSubmit, busy }: Props) {
                 {f.file}:{f.line}
               </code>
             </label>
-            {f.snippet && <pre className="snippet">{f.snippet}</pre>}
+            {f.snippet && (
+              <pre className="snippet" tabIndex={0} aria-label={`Code at ${f.file} line ${f.line}`}>
+                {f.snippet}
+              </pre>
+            )}
             <p className="muted">
               {f.explanation} {f.fix && <>Fix: {f.fix}</>} {f.cwe}
             </p>
@@ -117,15 +124,17 @@ export function ReviewPanel({ payload, onSubmit, busy }: Props) {
             <input type="checkbox" checked={includeTests} onChange={(e) => setIncludeTests(e.target.checked)} />
             Keep the {passing.length} passing test file{passing.length === 1 ? "" : "s"}
           </label>
-          <label className={includeTests ? "" : "muted"}>
-            <input
-              type="checkbox"
-              disabled={!includeTests}
-              checked={applyTests}
-              onChange={(e) => setApplyTests(e.target.checked)}
-            />
-            Also write them into the repository's working tree
-          </label>
+          {canApplyTests && (
+            <label className={includeTests ? "" : "muted"}>
+              <input
+                type="checkbox"
+                disabled={!includeTests}
+                checked={applyTests}
+                onChange={(e) => setApplyTests(e.target.checked)}
+              />
+              Also write them into the repository's working tree
+            </label>
+          )}
         </div>
       )}
 

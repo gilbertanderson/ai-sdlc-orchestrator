@@ -66,7 +66,7 @@ export interface Report {
 
 export interface RunSnapshot {
   id: string;
-  request: { repo?: string | null; base: string; head: string; demo?: boolean };
+  request: { repo?: string | null; base: string; head: string; demo?: boolean; scenario?: string };
   status: RunStatus;
   created: number;
   events: AgentEvent[];

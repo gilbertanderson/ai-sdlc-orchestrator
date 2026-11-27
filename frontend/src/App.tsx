@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { api, type RunListItem } from "./api";
 import { AgentLanes } from "./components/AgentLanes";
 import { ReportPanel } from "./components/ReportPanel";
 import { ReviewPanel } from "./components/ReviewPanel";
+import { serverSource } from "./transport";
 import type { RunSnapshot } from "./types";
 import { useRun } from "./useRun";
 
@@ -21,7 +22,8 @@ export default function App() {
   const [form, setForm] = useState({ repo: "", base: "main", head: "HEAD" });
   const [error, setError] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
-  const { run, connected, notice, sendReview } = useRun(selected);
+  const source = useMemo(() => (selected ? serverSource(selected) : null), [selected]);
+  const { run, connected, notice, sendReview } = useRun(source);
 
   const refresh = useCallback(() => api.listRuns().then(setRuns).catch(() => {}), []);
 
