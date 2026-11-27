@@ -44,5 +44,5 @@ def render_pr_description(summary: dict, findings: list[dict], test_jobs: list[d
         out += ["## Reviewer checklist", *[f"- [ ] {c}" for c in s["reviewer_checklist"]], ""]
     if note:
         out += ["## Reviewer note", note, ""]
-    out.append("_Prepared by AI-Native SDLC Orchestrator and approved by a human reviewer._")
+    out.append("_Prepared by Patchwise and approved by a human reviewer._")
     return "\n".join(out) + "\n"

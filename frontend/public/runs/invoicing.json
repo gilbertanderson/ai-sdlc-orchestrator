@@ -8,7 +8,7 @@
  "model": "offline-heuristics",
  "model_label": "Offline heuristic model",
  "recorded_at": "2026-11-27",
- "duration_s": 1.825,
+ "duration_s": 2.349,
  "request": {
   "repo": null,
   "base": "main",
@@ -55,7 +55,7 @@
    }
   },
   {
-   "t": 0.015,
+   "t": 0.012,
    "m": {
     "type": "event",
     "agent": "planner",
@@ -82,7 +82,7 @@
    }
   },
   {
-   "t": 0.016,
+   "t": 0.013,
    "m": {
     "type": "event",
     "agent": "planner",
@@ -92,7 +92,7 @@
    }
   },
   {
-   "t": 0.016,
+   "t": 0.013,
    "m": {
     "type": "event",
     "agent": "planner",
@@ -113,7 +113,7 @@
    }
   },
   {
-   "t": 0.018,
+   "t": 0.014,
    "m": {
     "type": "event",
     "agent": "summarizer",
@@ -123,7 +123,7 @@
    }
   },
   {
-   "t": 0.018,
+   "t": 0.014,
    "m": {
     "type": "event",
     "agent": "summarizer",
@@ -133,7 +133,7 @@
    }
   },
   {
-   "t": 0.018,
+   "t": 0.014,
    "m": {
     "type": "event",
     "agent": "summarizer",
@@ -146,7 +146,7 @@
    }
   },
   {
-   "t": 0.018,
+   "t": 0.015,
    "m": {
     "type": "event",
     "agent": "security",
@@ -156,7 +156,7 @@
    }
   },
   {
-   "t": 0.018,
+   "t": 0.015,
    "m": {
     "type": "event",
     "agent": "security",
@@ -197,7 +197,7 @@
    }
   },
   {
-   "t": 0.023,
+   "t": 0.02,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -212,7 +212,7 @@
    }
   },
   {
-   "t": 0.024,
+   "t": 0.021,
    "m": {
     "type": "event",
     "agent": "security",
@@ -222,7 +222,7 @@
    }
   },
   {
-   "t": 0.025,
+   "t": 0.021,
    "m": {
     "type": "event",
     "agent": "security",
@@ -240,7 +240,7 @@
    }
   },
   {
-   "t": 0.027,
+   "t": 0.024,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -250,7 +250,7 @@
    }
   },
   {
-   "t": 0.028,
+   "t": 0.024,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -264,7 +264,7 @@
    }
   },
   {
-   "t": 0.03,
+   "t": 0.026,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -274,7 +274,7 @@
    }
   },
   {
-   "t": 0.03,
+   "t": 0.026,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -288,7 +288,7 @@
    }
   },
   {
-   "t": 0.035,
+   "t": 0.031,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -298,7 +298,7 @@
    }
   },
   {
-   "t": 0.625,
+   "t": 0.862,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -312,7 +312,7 @@
    }
   },
   {
-   "t": 0.625,
+   "t": 0.862,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -322,7 +322,7 @@
    }
   },
   {
-   "t": 1.208,
+   "t": 1.609,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -331,12 +331,12 @@
     "data": {
      "file": "invoices/pricing.py",
      "status": "failing",
-     "output": "......F.                                                                 [100%]\n=================================== FAILURES ===================================\n___________________________ test_bulk_tier_example_3 ___________________________\n\n    def test_bulk_tier_example_3():\n>       assert pricing.bulk_tier(50) == 10\nE       assert 5 == 10\nE        +  where 5 = <function bulk_tier at 0x7faee17f31a0>(50)\nE        +    where <function bulk_tier at 0x7faee17f31a0> = pricing.bulk_tier\n\ntests/generated/test_invoices_pricing.py:29: AssertionError\n=========================== short test summary info ============================\nFAILED tests/generated/test_invoices_pricing.py::test_bulk_tier_example_3 - a...\n1 failed, 7 passed in 0.02s\n"
+     "output": "......F.                                                                 [100%]\n=================================== FAILURES ===================================\n___________________________ test_bulk_tier_example_3 ___________________________\n\n    def test_bulk_tier_example_3():\n>       assert pricing.bulk_tier(50) == 10\nE       assert 5 == 10\nE        +  where 5 = <function bulk_tier at 0x7f4550b4f1a0>(50)\nE        +    where <function bulk_tier at 0x7f4550b4f1a0> = pricing.bulk_tier\n\ntests/generated/test_invoices_pricing.py:29: AssertionError\n=========================== short test summary info ============================\nFAILED tests/generated/test_invoices_pricing.py::test_bulk_tier_example_3 - a...\n1 failed, 7 passed in 0.02s\n"
     }
    }
   },
   {
-   "t": 1.209,
+   "t": 1.611,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -346,7 +346,7 @@
    }
   },
   {
-   "t": 1.212,
+   "t": 1.614,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -356,7 +356,7 @@
    }
   },
   {
-   "t": 1.213,
+   "t": 1.615,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -370,7 +370,7 @@
    }
   },
   {
-   "t": 1.216,
+   "t": 1.619,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -380,7 +380,7 @@
    }
   },
   {
-   "t": 1.822,
+   "t": 2.346,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -394,7 +394,7 @@
    }
   },
   {
-   "t": 1.823,
+   "t": 2.347,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -417,7 +417,7 @@
    }
   },
   {
-   "t": 1.825,
+   "t": 2.349,
    "m": {
     "type": "event",
     "agent": "orchestrator",
@@ -427,7 +427,7 @@
    }
   },
   {
-   "t": 1.825,
+   "t": 2.349,
    "m": {
     "type": "status",
     "status": "awaiting_review",

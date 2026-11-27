@@ -138,7 +138,7 @@ def _event(agent: str, phase: str, message: str) -> dict:
 
 
 def create_app(manager: RunManager | None = None) -> FastAPI:
-    app = FastAPI(title="AI-Native SDLC Orchestrator", version=__version__)
+    app = FastAPI(title="Patchwise", version=__version__)
     app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"], allow_methods=["*"], allow_headers=["*"])
     mgr = manager or RunManager()
     app.state.manager = mgr

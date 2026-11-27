@@ -96,7 +96,7 @@ export function renderPrDescription(summary: SummaryInput, findings: Finding[], 
   if (truthy(s.testing_notes)) out.push("## How to test", ...s.testing_notes!.map((t) => `- ${t}`), "");
   if (truthy(s.reviewer_checklist)) out.push("## Reviewer checklist", ...s.reviewer_checklist!.map((c) => `- [ ] ${c}`), "");
   if (note) out.push("## Reviewer note", note, "");
-  out.push("_Prepared by AI-Native SDLC Orchestrator and approved by a human reviewer._");
+  out.push("_Prepared by Patchwise and approved by a human reviewer._");
   return out.join("\n") + "\n";
 }
 
