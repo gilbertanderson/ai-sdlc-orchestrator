@@ -2,8 +2,12 @@ __pycache__/
 *.egg-info/
 .venv/
 venv/
-runs/
+/runs/
 .pytest_cache/
 node_modules/
 frontend/dist/
 .env
+/backend/runs/
+*.tsbuildinfo
+frontend/test-results/
+frontend/playwright-report/

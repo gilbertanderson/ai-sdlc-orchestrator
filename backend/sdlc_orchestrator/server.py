@@ -21,7 +21,7 @@ from pydantic import BaseModel, Field
 
 from . import __version__
 from .config import get_settings
-from .demo import make_demo_repo
+from .demo import get_scenario, make_demo_repo
 from .graph import build_graph
 from .llm import get_llm
 
@@ -32,6 +32,7 @@ class RunRequest(BaseModel):
     head: str = "HEAD"
     diff: str | None = Field(None, description="A unified diff to review instead of reading the repo")
     demo: bool = Field(False, description="Ignore the other fields and run on a generated sample repo")
+    scenario: str = Field("invoicing", description="Which sample repo to generate when demo is set")
 
 
 class ReviewRequest(BaseModel):
@@ -110,8 +111,12 @@ class RunManager:
     async def start(self, req: RunRequest) -> Run:
         data = req.model_dump()
         if req.demo:
-            repo = await asyncio.to_thread(make_demo_repo)
-            data = {"repo": str(repo), "base": "main", "head": "feature/discounts", "diff": None, "demo": True}
+            try:
+                spec = get_scenario(req.scenario)
+            except ValueError as e:
+                raise HTTPException(400, str(e)) from None
+            repo = await asyncio.to_thread(make_demo_repo, None, spec.id)
+            data = {"repo": str(repo), "base": spec.base, "head": spec.head, "diff": None, "demo": True, "scenario": spec.id}
         elif not req.diff:
             if not req.repo or not (Path(req.repo) / ".git").exists():
                 raise HTTPException(400, "repo must be a path to a local git repository, or send a diff, or set demo")

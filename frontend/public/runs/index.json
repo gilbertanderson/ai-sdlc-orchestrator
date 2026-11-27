@@ -1,0 +1,29 @@
+{
+ "format": 1,
+ "runs": [
+  {
+   "id": "invoicing",
+   "scenario": "invoicing",
+   "title": "A discount bug and leaked secrets",
+   "blurb": "An off-by-one in bulk discounts and four security issues in a new export module.",
+   "order": 1,
+   "model": "offline-heuristics",
+   "model_label": "Offline heuristic model",
+   "recorded_at": "2026-11-27",
+   "duration_s": 1.825,
+   "file": "invoicing.json"
+  },
+  {
+   "id": "clean",
+   "scenario": "clean",
+   "title": "A clean change",
+   "blurb": "Line totals with tax, documented and tested by the author: what a passing run looks like.",
+   "order": 3,
+   "model": "offline-heuristics",
+   "model_label": "Offline heuristic model",
+   "recorded_at": "2026-11-27",
+   "duration_s": 0.577,
+   "file": "clean.json"
+  }
+ ]
+}
