@@ -1,6 +1,6 @@
-# Patchwise
+# PreReviewer
 
-Agentic PR prep with a human in the loop. (Formerly AI-Native SDLC Orchestrator; the repo, package and `sdlc-orchestrator` command keep that name.)
+PR prep before the human review: agents draft the description, tests and security findings, and you approve. (Formerly AI-Native SDLC Orchestrator; the repo, package and `sdlc-orchestrator` command keep that name.)
 
 An agentic workflow that prepares pull requests. A planner agent reads a branch's diff and sends work to three specialist agents, which write the PR description, generate and run unit tests, and scan the change for security issues. Each agent works in a plan, observe, execute loop, streams its reasoning to a live dashboard over WebSocket, and then the whole run pauses until a human approves, edits or rejects it.
 
