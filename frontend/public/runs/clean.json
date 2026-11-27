@@ -8,7 +8,7 @@
  "model": "offline-heuristics",
  "model_label": "Offline heuristic model",
  "recorded_at": "2026-11-27",
- "duration_s": 0.577,
+ "duration_s": 0.813,
  "request": {
   "repo": null,
   "base": "main",
@@ -46,7 +46,7 @@
  },
  "messages": [
   {
-   "t": 0.002,
+   "t": 0.004,
    "m": {
     "type": "event",
     "agent": "planner",
@@ -56,7 +56,7 @@
    }
   },
   {
-   "t": 0.012,
+   "t": 0.019,
    "m": {
     "type": "event",
     "agent": "planner",
@@ -90,7 +90,7 @@
    }
   },
   {
-   "t": 0.012,
+   "t": 0.021,
    "m": {
     "type": "event",
     "agent": "planner",
@@ -100,7 +100,7 @@
    }
   },
   {
-   "t": 0.012,
+   "t": 0.021,
    "m": {
     "type": "event",
     "agent": "planner",
@@ -121,7 +121,7 @@
    }
   },
   {
-   "t": 0.013,
+   "t": 0.022,
    "m": {
     "type": "event",
     "agent": "summarizer",
@@ -131,7 +131,7 @@
    }
   },
   {
-   "t": 0.013,
+   "t": 0.022,
    "m": {
     "type": "event",
     "agent": "summarizer",
@@ -141,7 +141,7 @@
    }
   },
   {
-   "t": 0.013,
+   "t": 0.022,
    "m": {
     "type": "event",
     "agent": "summarizer",
@@ -154,7 +154,7 @@
    }
   },
   {
-   "t": 0.014,
+   "t": 0.023,
    "m": {
     "type": "event",
     "agent": "security",
@@ -164,7 +164,7 @@
    }
   },
   {
-   "t": 0.014,
+   "t": 0.023,
    "m": {
     "type": "event",
     "agent": "security",
@@ -176,7 +176,7 @@
    }
   },
   {
-   "t": 0.016,
+   "t": 0.027,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -190,7 +190,7 @@
    }
   },
   {
-   "t": 0.017,
+   "t": 0.028,
    "m": {
     "type": "event",
     "agent": "security",
@@ -200,7 +200,7 @@
    }
   },
   {
-   "t": 0.017,
+   "t": 0.028,
    "m": {
     "type": "event",
     "agent": "security",
@@ -218,7 +218,7 @@
    }
   },
   {
-   "t": 0.019,
+   "t": 0.031,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -228,7 +228,7 @@
    }
   },
   {
-   "t": 0.019,
+   "t": 0.031,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -242,7 +242,7 @@
    }
   },
   {
-   "t": 0.023,
+   "t": 0.036,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -252,7 +252,7 @@
    }
   },
   {
-   "t": 0.574,
+   "t": 0.809,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -266,7 +266,7 @@
    }
   },
   {
-   "t": 0.575,
+   "t": 0.811,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -284,7 +284,7 @@
    }
   },
   {
-   "t": 0.577,
+   "t": 0.813,
    "m": {
     "type": "event",
     "agent": "orchestrator",
@@ -294,7 +294,7 @@
    }
   },
   {
-   "t": 0.577,
+   "t": 0.813,
    "m": {
     "type": "status",
     "status": "awaiting_review",
