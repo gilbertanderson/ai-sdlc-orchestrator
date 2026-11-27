@@ -68,7 +68,7 @@ The demo at gilbertanderson.com runs without a server, because the server runs m
 
 ![After approval: the files to download and a preview of the PR description, with the dismissed finding left out](docs/demo-report.png)
 
-On every push to `main`, the Pages workflow re-records the offline runs from that commit's code, checks the port against them, runs the browser tests (desktop, phone and an axe accessibility scan) and deploys. Runs recorded with Bedrock (`LLM_PROVIDER=bedrock sdlc-orchestrator record --scenario invoicing ...`) are committed and deployed as they are.
+On every push to `main`, the Pages workflow re-records the offline runs from that commit's code, checks the port against them, runs the browser tests (desktop, phone and an axe accessibility scan) and deploys. Runs recorded with Bedrock (`LLM_PROVIDER=bedrock sdlc-orchestrator record --scenario invoicing ...`) are committed and deployed as they are. The demo has the two offline runs for now; a run recorded with Claude on Amazon Bedrock is coming.
 
 ```bash
 cd frontend
