@@ -10,7 +10,7 @@
    "model": "offline-heuristics",
    "model_label": "Offline heuristic model",
    "recorded_at": "2026-11-27",
-   "duration_s": 2.349,
+   "duration_s": 2.028,
    "file": "invoicing.json"
   },
   {
@@ -22,7 +22,7 @@
    "model": "offline-heuristics",
    "model_label": "Offline heuristic model",
    "recorded_at": "2026-11-27",
-   "duration_s": 0.813,
+   "duration_s": 0.723,
    "file": "clean.json"
   }
  ]

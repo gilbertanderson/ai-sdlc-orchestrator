@@ -72,7 +72,7 @@ export default function DemoApp() {
   );
 
   useEffect(() => {
-    document.title = "Patchwise · Live demo";
+    document.title = "PreReviewer · Live demo";
     getJson<RecordingIndex>("runs/index.json")
       .then((index) => {
         setRuns(index.runs);
@@ -100,7 +100,7 @@ export default function DemoApp() {
         <div className="brand">
           <span className="brand__mark" aria-hidden />
           <div>
-            <h1>Patchwise</h1>
+            <h1>PreReviewer</h1>
             <p className="muted">Live demo · recorded runs</p>
           </div>
         </div>

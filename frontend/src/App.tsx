@@ -58,7 +58,7 @@ export default function App() {
         <div className="brand">
           <span className="brand__mark" aria-hidden />
           <div>
-            <h1>Patchwise</h1>
+            <h1>PreReviewer</h1>
             <p className="muted">{model ? `Model: ${model}` : "API offline"}</p>
           </div>
         </div>

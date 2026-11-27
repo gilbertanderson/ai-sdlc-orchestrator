@@ -14,7 +14,12 @@ def _final(recording):
 
 
 def _timeline(recording):
-    return [(m["m"]["agent"], m["m"]["phase"], m["m"]["message"]) for m in recording["messages"] if m["m"]["type"] == "event"]
+    """Each agent's events in order. The agents run in parallel, so their events interleave differently each run."""
+    lanes: dict[str, list] = {}
+    for m in recording["messages"]:
+        if m["m"]["type"] == "event":
+            lanes.setdefault(m["m"]["agent"], []).append((m["m"]["phase"], m["m"]["message"]))
+    return lanes
 
 
 @pytest.fixture(scope="module")

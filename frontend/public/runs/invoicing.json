@@ -8,7 +8,7 @@
  "model": "offline-heuristics",
  "model_label": "Offline heuristic model",
  "recorded_at": "2026-11-27",
- "duration_s": 2.349,
+ "duration_s": 2.028,
  "request": {
   "repo": null,
   "base": "main",
@@ -116,39 +116,6 @@
    "t": 0.014,
    "m": {
     "type": "event",
-    "agent": "summarizer",
-    "phase": "observe",
-    "message": "Reading 2 changed files and 2 commit messages",
-    "data": {}
-   }
-  },
-  {
-   "t": 0.014,
-   "m": {
-    "type": "event",
-    "agent": "summarizer",
-    "phase": "execute",
-    "message": "Drafting the PR title, description and risk assessment",
-    "data": {}
-   }
-  },
-  {
-   "t": 0.014,
-   "m": {
-    "type": "event",
-    "agent": "summarizer",
-    "phase": "done",
-    "message": "Risk is medium because: Code changed with no test changes in the diff.",
-    "data": {
-     "title": "Add percentage and bulk discounts (+1 more)",
-     "risk": "medium"
-    }
-   }
-  },
-  {
-   "t": 0.015,
-   "m": {
-    "type": "event",
     "agent": "security",
     "phase": "observe",
     "message": "Running 12 deterministic rules over 55 added lines",
@@ -197,6 +164,39 @@
    }
   },
   {
+   "t": 0.015,
+   "m": {
+    "type": "event",
+    "agent": "summarizer",
+    "phase": "observe",
+    "message": "Reading 2 changed files and 2 commit messages",
+    "data": {}
+   }
+  },
+  {
+   "t": 0.015,
+   "m": {
+    "type": "event",
+    "agent": "summarizer",
+    "phase": "execute",
+    "message": "Drafting the PR title, description and risk assessment",
+    "data": {}
+   }
+  },
+  {
+   "t": 0.015,
+   "m": {
+    "type": "event",
+    "agent": "summarizer",
+    "phase": "done",
+    "message": "Risk is medium because: Code changed with no test changes in the diff.",
+    "data": {
+     "title": "Add percentage and bulk discounts (+1 more)",
+     "risk": "medium"
+    }
+   }
+  },
+  {
    "t": 0.02,
    "m": {
     "type": "event",
@@ -240,7 +240,7 @@
    }
   },
   {
-   "t": 0.024,
+   "t": 0.023,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -250,7 +250,7 @@
    }
   },
   {
-   "t": 0.024,
+   "t": 0.023,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -264,7 +264,7 @@
    }
   },
   {
-   "t": 0.026,
+   "t": 0.025,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -288,7 +288,7 @@
    }
   },
   {
-   "t": 0.031,
+   "t": 0.03,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -298,7 +298,7 @@
    }
   },
   {
-   "t": 0.862,
+   "t": 0.673,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -312,7 +312,7 @@
    }
   },
   {
-   "t": 0.862,
+   "t": 0.673,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -322,7 +322,7 @@
    }
   },
   {
-   "t": 1.609,
+   "t": 1.354,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -331,12 +331,12 @@
     "data": {
      "file": "invoices/pricing.py",
      "status": "failing",
-     "output": "......F.                                                                 [100%]\n=================================== FAILURES ===================================\n___________________________ test_bulk_tier_example_3 ___________________________\n\n    def test_bulk_tier_example_3():\n>       assert pricing.bulk_tier(50) == 10\nE       assert 5 == 10\nE        +  where 5 = <function bulk_tier at 0x7f4550b4f1a0>(50)\nE        +    where <function bulk_tier at 0x7f4550b4f1a0> = pricing.bulk_tier\n\ntests/generated/test_invoices_pricing.py:29: AssertionError\n=========================== short test summary info ============================\nFAILED tests/generated/test_invoices_pricing.py::test_bulk_tier_example_3 - a...\n1 failed, 7 passed in 0.02s\n"
+     "output": "......F.                                                                 [100%]\n=================================== FAILURES ===================================\n___________________________ test_bulk_tier_example_3 ___________________________\n\n    def test_bulk_tier_example_3():\n>       assert pricing.bulk_tier(50) == 10\nE       assert 5 == 10\nE        +  where 5 = <function bulk_tier at 0x7fc6d57271a0>(50)\nE        +    where <function bulk_tier at 0x7fc6d57271a0> = pricing.bulk_tier\n\ntests/generated/test_invoices_pricing.py:29: AssertionError\n=========================== short test summary info ============================\nFAILED tests/generated/test_invoices_pricing.py::test_bulk_tier_example_3 - a...\n1 failed, 7 passed in 0.02s\n"
     }
    }
   },
   {
-   "t": 1.611,
+   "t": 1.355,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -346,7 +346,7 @@
    }
   },
   {
-   "t": 1.614,
+   "t": 1.359,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -356,7 +356,7 @@
    }
   },
   {
-   "t": 1.615,
+   "t": 1.359,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -370,7 +370,7 @@
    }
   },
   {
-   "t": 1.619,
+   "t": 1.363,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -380,7 +380,7 @@
    }
   },
   {
-   "t": 2.346,
+   "t": 2.025,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -394,7 +394,7 @@
    }
   },
   {
-   "t": 2.347,
+   "t": 2.026,
    "m": {
     "type": "event",
     "agent": "tests",
@@ -417,7 +417,7 @@
    }
   },
   {
-   "t": 2.349,
+   "t": 2.028,
    "m": {
     "type": "event",
     "agent": "orchestrator",
@@ -427,7 +427,7 @@
    }
   },
   {
-   "t": 2.349,
+   "t": 2.028,
    "m": {
     "type": "status",
     "status": "awaiting_review",
