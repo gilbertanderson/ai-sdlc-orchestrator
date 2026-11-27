@@ -1,0 +1,345 @@
+{
+ "format": 1,
+ "id": "clean",
+ "scenario": "clean",
+ "title": "A clean change",
+ "blurb": "Line totals with tax, documented and tested by the author: what a passing run looks like.",
+ "order": 3,
+ "model": "offline-heuristics",
+ "model_label": "Offline heuristic model",
+ "recorded_at": "2026-11-27",
+ "duration_s": 0.577,
+ "request": {
+  "repo": null,
+  "base": "main",
+  "head": "feature/line-totals",
+  "demo": true,
+  "scenario": "clean"
+ },
+ "commits": [
+  "Document line totals",
+  "Test line totals and subtotals",
+  "Add line totals with tax"
+ ],
+ "diff": "diff --git a/README.md b/README.md\nindex c5ddbdb..234b28a 100644\n--- a/README.md\n+++ b/README.md\n@@ -1,3 +1,6 @@\n # invoices\n \n Tiny invoicing helpers.\n+\n+- `line_total(quantity, unit_price, tax_percent=0)` prices one line, rounded to cents.\n+- `subtotal(items, tax_percent=0)` adds up the lines on an invoice.\ndiff --git a/invoices/pricing.py b/invoices/pricing.py\nindex 8c75de6..4b2f36d 100644\n--- a/invoices/pricing.py\n+++ b/invoices/pricing.py\n@@ -1,10 +1,28 @@\n \"\"\"Price calculations.\"\"\"\n \n \n-def subtotal(items):\n-    \"\"\"Sum quantity * unit price.\n+def line_total(quantity, unit_price, tax_percent=0):\n+    \"\"\"Price of one invoice line with optional tax, rounded to cents.\n+\n+    >>> line_total(2, 5.0)\n+    10.0\n+    >>> line_total(3, 2.5, tax_percent=8)\n+    8.1\n+    >>> line_total(-1, 5.0)\n+    Traceback (most recent call last):\n+    ValueError: quantity must not be negative\n+    \"\"\"\n+    if quantity < 0:\n+        raise ValueError(\"quantity must not be negative\")\n+    return round(quantity * unit_price * (1 + tax_percent / 100), 2)\n+\n+\n+def subtotal(items, tax_percent=0):\n+    \"\"\"Sum of every line on the invoice, with optional tax.\n \n     >>> subtotal([(2, 5.0), (1, 2.5)])\n     12.5\n+    >>> subtotal([(2, 5.0)], tax_percent=10)\n+    11.0\n     \"\"\"\n-    return sum(qty * price for qty, price in items)\n+    return round(sum(line_total(qty, price, tax_percent) for qty, price in items), 2)\ndiff --git a/tests/test_pricing.py b/tests/test_pricing.py\nnew file mode 100644\nindex 0000000..02356d5\n--- /dev/null\n+++ b/tests/test_pricing.py\n@@ -0,0 +1,16 @@\n+import pytest\n+\n+from invoices.pricing import line_total, subtotal\n+\n+\n+def test_line_total_adds_tax():\n+    assert line_total(4, 2.5, tax_percent=10) == 11.0\n+\n+\n+def test_line_total_rejects_negative_quantity():\n+    with pytest.raises(ValueError):\n+        line_total(-2, 1.0)\n+\n+\n+def test_subtotal_of_an_empty_invoice_is_zero():\n+    assert subtotal([]) == 0\n",
+ "base_summary": {
+  "title": "Add line totals with tax (+2 more)",
+  "summary": "This PR changes 3 files (markdown, python) with 40 additions and 3 deletions. Commits: Document line totals; Test line totals and subtotals; Add line totals with tax.",
+  "changes": [
+   "Update `README.md`, +3/-0",
+   "Update `invoices/pricing.py` (line_total, subtotal), +21/-3",
+   "Add `tests/test_pricing.py` (test_line_total_adds_tax, test_line_total_rejects_negative_quantity, test_subtotal_of_an_empty_invoice_is_zero), +16/-0"
+  ],
+  "risk": "low",
+  "risk_reasons": [
+   "Small, contained change"
+  ],
+  "testing_notes": [
+   "Run the unit test suite",
+   "Exercise the changed code paths locally"
+  ],
+  "reviewer_checklist": [
+   "Behavior matches the PR title and description",
+   "New Python functions handle invalid input and empty values"
+  ],
+  "reasoning": "Risk is low because: the change is small and contained."
+ },
+ "messages": [
+  {
+   "t": 0.002,
+   "m": {
+    "type": "event",
+    "agent": "planner",
+    "phase": "observe",
+    "message": "Reading the diff",
+    "data": {}
+   }
+  },
+  {
+   "t": 0.012,
+   "m": {
+    "type": "event",
+    "agent": "planner",
+    "phase": "observe",
+    "message": "3 files changed, +40/-3, 3 commits",
+    "data": {
+     "files": [
+      {
+       "path": "README.md",
+       "status": "modified",
+       "language": "markdown",
+       "additions": 3,
+       "deletions": 0
+      },
+      {
+       "path": "invoices/pricing.py",
+       "status": "modified",
+       "language": "python",
+       "additions": 21,
+       "deletions": 3
+      },
+      {
+       "path": "tests/test_pricing.py",
+       "status": "added",
+       "language": "python",
+       "additions": 16,
+       "deletions": 0
+      }
+     ]
+    }
+   }
+  },
+  {
+   "t": 0.012,
+   "m": {
+    "type": "event",
+    "agent": "planner",
+    "phase": "plan",
+    "message": "Choosing agents with offline-heuristics",
+    "data": {}
+   }
+  },
+  {
+   "t": 0.012,
+   "m": {
+    "type": "event",
+    "agent": "planner",
+    "phase": "plan",
+    "message": "The diff touches 3 files. Running summarize, tests, security.",
+    "data": {
+     "agents": [
+      "summarize",
+      "tests",
+      "security"
+     ],
+     "focus": [
+      "summarize: 3 files, +40/-3",
+      "tests: invoices/pricing.py",
+      "security: 37 added lines across 2 files"
+     ]
+    }
+   }
+  },
+  {
+   "t": 0.013,
+   "m": {
+    "type": "event",
+    "agent": "summarizer",
+    "phase": "observe",
+    "message": "Reading 3 changed files and 3 commit messages",
+    "data": {}
+   }
+  },
+  {
+   "t": 0.013,
+   "m": {
+    "type": "event",
+    "agent": "summarizer",
+    "phase": "execute",
+    "message": "Drafting the PR title, description and risk assessment",
+    "data": {}
+   }
+  },
+  {
+   "t": 0.013,
+   "m": {
+    "type": "event",
+    "agent": "summarizer",
+    "phase": "done",
+    "message": "Risk is low because: the change is small and contained.",
+    "data": {
+     "title": "Add line totals with tax (+2 more)",
+     "risk": "low"
+    }
+   }
+  },
+  {
+   "t": 0.014,
+   "m": {
+    "type": "event",
+    "agent": "security",
+    "phase": "observe",
+    "message": "Running 12 deterministic rules over 40 added lines",
+    "data": {}
+   }
+  },
+  {
+   "t": 0.014,
+   "m": {
+    "type": "event",
+    "agent": "security",
+    "phase": "observe",
+    "message": "0 candidate finding(s) from rules",
+    "data": {
+     "candidates": []
+    }
+   }
+  },
+  {
+   "t": 0.016,
+   "m": {
+    "type": "event",
+    "agent": "tests",
+    "phase": "plan",
+    "message": "Planned tests for 1 file(s): invoices/pricing.py (line_total, subtotal)",
+    "data": {
+     "jobs": [
+      "invoices/pricing.py"
+     ]
+    }
+   }
+  },
+  {
+   "t": 0.017,
+   "m": {
+    "type": "event",
+    "agent": "security",
+    "phase": "execute",
+    "message": "Reviewing 0 candidate(s) in context and looking for issues the rules miss",
+    "data": {}
+   }
+  },
+  {
+   "t": 0.017,
+   "m": {
+    "type": "event",
+    "agent": "security",
+    "phase": "done",
+    "message": "Checked 0 rule hits: 0 confirmed, 0 dismissed as false positives. The offline model does not look for issues beyond the rules.",
+    "data": {
+     "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0
+     },
+     "dismissed": 0
+    }
+   }
+  },
+  {
+   "t": 0.019,
+   "m": {
+    "type": "event",
+    "agent": "tests",
+    "phase": "execute",
+    "message": "Writing tests for invoices/pricing.py (attempt 1)",
+    "data": {}
+   }
+  },
+  {
+   "t": 0.019,
+   "m": {
+    "type": "event",
+    "agent": "tests",
+    "phase": "execute",
+    "message": "Wrote 5 example-based test(s) and 2 signature check(s) for line_total, subtotal: assertions from docstring examples where present, plus signature and smoke checks.",
+    "data": {
+     "file": "invoices/pricing.py",
+     "attempt": 1,
+     "code": "import inspect\n\nimport pytest\n\nimport invoices.pricing as pricing\n\n\ndef test_line_total_example_1():\n    assert pricing.line_total(2, 5.0) == 10.0\n\ndef test_line_total_example_2():\n    assert pricing.line_total(3, 2.5, tax_percent=8) == 8.1\n\ndef test_line_total_example_3():\n    with pytest.raises(ValueError):\n        pricing.line_total(-1, 5.0)\n\ndef test_line_total_signature():\n    assert callable(pricing.line_total)\n    assert list(inspect.signature(pricing.line_total).parameters) == ['quantity', 'unit_price', 'tax_percent']\n\ndef test_subtotal_example_1():\n    assert pricing.subtotal([(2, 5.0), (1, 2.5)]) == 12.5\n\ndef test_subtotal_example_2():\n    assert pricing.subtotal([(2, 5.0)], tax_percent=10) == 11.0\n\ndef test_subtotal_signature():\n    assert callable(pricing.subtotal)\n    assert list(inspect.signature(pricing.subtotal).parameters) == ['items', 'tax_percent']\n"
+    }
+   }
+  },
+  {
+   "t": 0.023,
+   "m": {
+    "type": "event",
+    "agent": "tests",
+    "phase": "observe",
+    "message": "Running pytest on tests/generated/test_invoices_pricing.py against a clean checkout of feature/line-totals",
+    "data": {}
+   }
+  },
+  {
+   "t": 0.574,
+   "m": {
+    "type": "event",
+    "agent": "tests",
+    "phase": "observe",
+    "message": "invoices/pricing.py: 7 passed",
+    "data": {
+     "file": "invoices/pricing.py",
+     "status": "passing",
+     "output": ".......                                                                  [100%]\n7 passed in 0.01s\n"
+    }
+   }
+  },
+  {
+   "t": 0.575,
+   "m": {
+    "type": "event",
+    "agent": "tests",
+    "phase": "done",
+    "message": "1 of 1 test file(s) passing",
+    "data": {
+     "jobs": [
+      {
+       "file": "invoices/pricing.py",
+       "status": "passing",
+       "attempts": 1
+      }
+     ]
+    }
+   }
+  },
+  {
+   "t": 0.577,
+   "m": {
+    "type": "event",
+    "agent": "orchestrator",
+    "phase": "review",
+    "message": "Waiting for a human to approve, edit or reject",
+    "data": {}
+   }
+  },
+  {
+   "t": 0.577,
+   "m": {
+    "type": "status",
+    "status": "awaiting_review",
+    "review": {
+     "summary": {
+      "title": "Add line totals with tax (+2 more)",
+      "summary": "This PR changes 3 files (markdown, python) with 40 additions and 3 deletions. Commits: Document line totals; Test line totals and subtotals; Add line totals with tax.",
+      "changes": [
+       "Update `README.md`, +3/-0",
+       "Update `invoices/pricing.py` (line_total, subtotal), +21/-3",
+       "Add `tests/test_pricing.py` (test_line_total_adds_tax, test_line_total_rejects_negative_quantity, test_subtotal_of_an_empty_invoice_is_zero), +16/-0"
+      ],
+      "risk": "low",
+      "risk_reasons": [
+       "Small, contained change"
+      ],
+      "testing_notes": [
+       "Run the unit test suite",
+       "Exercise the changed code paths locally"
+      ],
+      "reviewer_checklist": [
+       "Behavior matches the PR title and description",
+       "New Python functions handle invalid input and empty values"
+      ],
+      "reasoning": "Risk is low because: the change is small and contained."
+     },
+     "findings": [],
+     "tests": [
+      {
+       "file": "invoices/pricing.py",
+       "test_path": "tests/generated/test_invoices_pricing.py",
+       "status": "passing",
+       "attempts": 1,
+       "code": "import inspect\n\nimport pytest\n\nimport invoices.pricing as pricing\n\n\ndef test_line_total_example_1():\n    assert pricing.line_total(2, 5.0) == 10.0\n\ndef test_line_total_example_2():\n    assert pricing.line_total(3, 2.5, tax_percent=8) == 8.1\n\ndef test_line_total_example_3():\n    with pytest.raises(ValueError):\n        pricing.line_total(-1, 5.0)\n\ndef test_line_total_signature():\n    assert callable(pricing.line_total)\n    assert list(inspect.signature(pricing.line_total).parameters) == ['quantity', 'unit_price', 'tax_percent']\n\ndef test_subtotal_example_1():\n    assert pricing.subtotal([(2, 5.0), (1, 2.5)]) == 12.5\n\ndef test_subtotal_example_2():\n    assert pricing.subtotal([(2, 5.0)], tax_percent=10) == 11.0\n\ndef test_subtotal_signature():\n    assert callable(pricing.subtotal)\n    assert list(inspect.signature(pricing.subtotal).parameters) == ['items', 'tax_percent']\n",
+       "counts": {
+        "passed": 7
+       },
+       "suspected_bugs": [],
+       "reasoning": "Wrote 5 example-based test(s) and 2 signature check(s) for line_total, subtotal: assertions from docstring examples where present, plus signature and smoke checks."
+      }
+     ]
+    },
+    "report": null,
+    "error": null
+   }
+  }
+ ]
+}

@@ -44,3 +44,12 @@ def test_review_over_http_and_validation():
         snap = _wait(client, run_id, "done")
         assert snap["report"]["status"] == "rejected"
         assert client.post(f"/api/runs/{run_id}/review", json={}).status_code == 409
+
+
+def test_demo_scenarios():
+    with TestClient(create_app()) as client:
+        assert client.post("/api/runs", json={"demo": True, "scenario": "nope"}).status_code == 400
+        run_id = client.post("/api/runs", json={"demo": True, "scenario": "clean"}).json()["id"]
+        snap = _wait(client, run_id, "awaiting_review")
+        assert snap["request"]["head"] == "feature/line-totals"
+        assert snap["review"]["findings"] == []

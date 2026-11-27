@@ -317,45 +317,32 @@ def build_graph(llm: LLM | None = None, settings: Settings | None = None, checkp
     # ----------------------------------------------------------------- finalize
     def finalize(state: RunState) -> dict:
         review = state.get("review", {})
-        approved = review.get("decision", "approve") == "approve"
-        summary = dict(state.get("summary") or {})
-        summary = with_security_risk(summary, state.get("findings", []), set(review.get("dismissed", [])))
-        if review.get("title"):
-            summary["title"] = review["title"]
-        dismissed = set(review.get("dismissed", []))
-        findings = [{**f, "dismissed": f.get("dismissed") or f["id"] in dismissed} for f in state.get("findings", [])]
-        include_tests = approved and review.get("include_tests", True)
-        tests = [j for j in state.get("test_jobs", []) if j["status"] == "passing"] if include_tests else []
+        result = prepare_outputs(state.get("summary"), state.get("findings", []), state.get("test_jobs", []), review)
+        approved = result["approved"]
 
         out = settings.runs_dir / state["run_id"]
         out.mkdir(parents=True, exist_ok=True)
-        files_written = []
-        if approved:
-            md = render_pr_description(summary, findings, state.get("test_jobs", []), review.get("note", ""))
-            (out / "PR_DESCRIPTION.md").write_text(md)
-            files_written.append("PR_DESCRIPTION.md")
-            for j in tests:
-                p = out / j["test_path"]
-                p.parent.mkdir(parents=True, exist_ok=True)
-                p.write_text(j["code"])
-                files_written.append(j["test_path"])
-                if review.get("apply_tests") and state.get("repo"):
-                    target = Path(state["repo"]) / j["test_path"]
-                    target.parent.mkdir(parents=True, exist_ok=True)
-                    target.write_text(j["code"])
-        (out / "security-report.json").write_text(json.dumps(findings, indent=2))
-        files_written.append("security-report.json")
+        for rel, text in result["files"].items():
+            p = out / rel
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(text, encoding="utf-8")
+        apply = bool(review.get("apply_tests")) and approved
+        if apply and state.get("repo"):
+            for j in result["tests"]:
+                target = Path(state["repo"]) / j["test_path"]
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(j["code"], encoding="utf-8")
         report = {
             "status": "approved" if approved else "rejected",
             "output_dir": str(out),
-            "files": files_written,
-            "applied_to_repo": bool(review.get("apply_tests")) and approved,
-            "summary": summary,
-            "open_findings": sum(not f["dismissed"] for f in findings),
-            "tests_passing": sum(j["status"] == "passing" for j in state.get("test_jobs", [])),
+            "files": list(result["files"]),
+            "applied_to_repo": apply,
+            "summary": result["summary"],
+            "open_findings": result["open_findings"],
+            "tests_passing": result["tests_passing"],
         }
-        (out / "run.json").write_text(json.dumps({**report, "plan": state.get("plan"), "review": review}, indent=2))
-        emit("orchestrator", "done", f"Run {report['status']}. Wrote {len(files_written)} file(s) to {out}", report=report)
+        (out / "run.json").write_text(json.dumps({**report, "plan": state.get("plan"), "review": review}, indent=2), encoding="utf-8")
+        emit("orchestrator", "done", f"Run {report['status']}. Wrote {len(report['files'])} file(s) to {out}", report=report)
         return {"report": report}
 
     g = StateGraph(RunState)
@@ -394,6 +381,38 @@ def with_security_risk(summary: dict, findings: list[dict], dismissed: set[str])
         **summary,
         "risk": "high",
         "risk_reasons": [*summary.get("risk_reasons", []), f"{len(serious)} open critical or high security finding(s)"],
+    }
+
+
+def prepare_outputs(summary: dict | None, findings: list[dict], test_jobs: list[dict], review: dict) -> dict:
+    """Everything an approved or rejected run produces, without touching the filesystem.
+
+    `finalize` writes these files to disk. The browser demo has a TypeScript port of
+    this function (frontend/src/demo/outputs.ts), checked against recorded golden
+    output, so keep the two in step.
+    """
+    approved = review.get("decision", "approve") == "approve"
+    dismissed = set(review.get("dismissed", []))
+    final_summary = with_security_risk(dict(summary or {}), findings, dismissed)
+    if review.get("title"):
+        final_summary = {**final_summary, "title": review["title"]}
+    final_findings = [{**f, "dismissed": bool(f.get("dismissed")) or f["id"] in dismissed} for f in findings]
+    include_tests = approved and review.get("include_tests", True)
+    tests = [j for j in test_jobs if j["status"] == "passing"] if include_tests else []
+    files: dict[str, str] = {}
+    if approved:
+        files["PR_DESCRIPTION.md"] = render_pr_description(final_summary, final_findings, test_jobs, review.get("note", ""))
+        for j in tests:
+            files[j["test_path"]] = j["code"]
+    files["security-report.json"] = json.dumps(final_findings, indent=2)
+    return {
+        "approved": approved,
+        "summary": final_summary,
+        "findings": final_findings,
+        "files": files,
+        "tests": tests,
+        "open_findings": sum(not f["dismissed"] for f in final_findings),
+        "tests_passing": sum(j["status"] == "passing" for j in test_jobs),
     }
 
 

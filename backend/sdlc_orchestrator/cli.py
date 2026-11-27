@@ -4,6 +4,7 @@
     sdlc-orchestrator run --repo . --base main    # run in the terminal, review interactively
     sdlc-orchestrator run --demo --yes            # sample repo, auto-approve
     sdlc-orchestrator demo-repo ./sample          # create the sample repo to experiment with
+    sdlc-orchestrator record --out-dir ../frontend/public/runs   # record runs for the browser demo
 """
 
 from __future__ import annotations
@@ -44,11 +45,12 @@ def _review_in_terminal(payload: dict, auto: bool) -> dict:
 def cmd_run(args: argparse.Namespace) -> int:
     from langgraph.types import Command
 
-    from .demo import make_demo_repo
+    from .demo import get_scenario, make_demo_repo
     from .graph import build_graph
 
     if args.demo:
-        repo, base, head = str(make_demo_repo()), "main", "feature/discounts"
+        spec = get_scenario(args.scenario)
+        repo, base, head = str(make_demo_repo(None, spec.id)), spec.base, spec.head
         print(f"Sample repo: {repo}")
     else:
         repo, base, head = args.repo, args.base, args.head
@@ -83,10 +85,29 @@ def cmd_serve(args: argparse.Namespace) -> int:
 
 
 def cmd_demo_repo(args: argparse.Namespace) -> int:
-    from .demo import make_demo_repo
+    from .demo import get_scenario, make_demo_repo
 
-    print(make_demo_repo(args.path))
+    spec = get_scenario(args.scenario)
+    print(f"{make_demo_repo(args.path, spec.id)}  (compare {spec.base}...{spec.head})")
     return 0
+
+
+def cmd_record(args: argparse.Namespace) -> int:
+    from pathlib import Path
+
+    from .demo import SCENARIOS
+    from .record import public_warnings, record, write_recording
+
+    status = 0
+    for scenario in args.scenario or list(SCENARIOS):
+        recording, golden = record(scenario)
+        path = write_recording(recording, golden, Path(args.out_dir), Path(args.golden_dir) if args.golden_dir else None)
+        print(f"Recorded {recording['id']} with {recording['model_label']}: "
+              f"{len(recording['messages'])} messages over {recording['duration_s']:.1f} s -> {path}")
+        for warning in public_warnings(recording):
+            print(f"  check before publishing: {warning}", file=sys.stderr)
+            status = 1
+    return status
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -98,6 +119,7 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--base", default="main")
     r.add_argument("--head", default="HEAD")
     r.add_argument("--demo", action="store_true", help="use a generated sample repo")
+    r.add_argument("--scenario", default="invoicing", help="which sample repo to use with --demo")
     r.add_argument("--yes", action="store_true", help="approve without prompting")
     r.add_argument("--json", action="store_true", help="print the final report as JSON")
     r.set_defaults(fn=cmd_run)
@@ -109,7 +131,14 @@ def main(argv: list[str] | None = None) -> int:
 
     d = sub.add_parser("demo-repo", help="create the sample repository")
     d.add_argument("path")
+    d.add_argument("--scenario", default="invoicing", help="invoicing (a bug and security issues) or clean")
     d.set_defaults(fn=cmd_demo_repo)
+
+    rec = sub.add_parser("record", help="record demo runs for the browser dashboard")
+    rec.add_argument("--scenario", action="append", help="scenario to record; repeat for more (default: all)")
+    rec.add_argument("--out-dir", required=True, help="where the recordings and index.json go")
+    rec.add_argument("--golden-dir", help="where to save golden outputs for the frontend tests")
+    rec.set_defaults(fn=cmd_record)
 
     args = p.parse_args(argv)
     return args.fn(args)

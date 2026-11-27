@@ -1,0 +1,419 @@
+{
+ "format": 1,
+ "id": "invoicing",
+ "cases": [
+  {
+   "name": "approve as is",
+   "review": {
+    "decision": "approve",
+    "title": null,
+    "note": "",
+    "dismissed": [],
+    "include_tests": true,
+    "apply_tests": false
+   },
+   "expected": {
+    "approved": true,
+    "summary": {
+     "title": "Add percentage and bulk discounts (+1 more)",
+     "summary": "This PR changes 2 files (python) with 55 additions and 0 deletions. Commits: Upload invoices to the accounting system; Add percentage and bulk discounts.",
+     "changes": [
+      "Add `invoices/export.py` (upload, find_customer), +22/-0",
+      "Update `invoices/pricing.py` (subtotal, apply_discount, bulk_tier), +33/-0"
+     ],
+     "risk": "high",
+     "risk_reasons": [
+      "Code changed with no test changes in the diff",
+      "3 open critical or high security finding(s)"
+     ],
+     "testing_notes": [
+      "Run the unit test suite",
+      "Exercise the changed code paths locally"
+     ],
+     "reviewer_checklist": [
+      "Behavior matches the PR title and description",
+      "New Python functions handle invalid input and empty values",
+      "Generated tests are reviewed and committed, or tests are added by hand"
+     ],
+     "reasoning": "Risk is medium because: Code changed with no test changes in the diff."
+    },
+    "findings": [
+     {
+      "id": "SEC003-invoices/export.py:7",
+      "rule": "SEC003",
+      "title": "Hardcoded password or secret",
+      "severity": "high",
+      "cwe": "CWE-798",
+      "file": "invoices/export.py",
+      "line": 7,
+      "snippet": "ACCOUNTING_API_KEY = \"sk_live_51Hq8x2Yb7cK9pLmN0\"",
+      "fix": "Read the value from configuration or a secrets manager instead of source code.",
+      "source": "rule",
+      "explanation": "Hardcoded password or secret on an added line in invoices/export.py.",
+      "dismissed": false
+     },
+     {
+      "id": "SEC004-invoices/export.py:11",
+      "rule": "SEC004",
+      "title": "Shell command built with shell=True",
+      "severity": "high",
+      "cwe": "CWE-78",
+      "file": "invoices/export.py",
+      "line": 11,
+      "snippet": "subprocess.run(f\"gzip -k {invoice_path}\", shell=True, check=True)",
+      "fix": "Pass an argument list and leave shell=False.",
+      "source": "rule",
+      "explanation": "Shell command built with shell=True on an added line in invoices/export.py.",
+      "dismissed": false
+     },
+     {
+      "id": "SEC007-invoices/export.py:22",
+      "rule": "SEC007",
+      "title": "SQL built with string formatting",
+      "severity": "high",
+      "cwe": "CWE-89",
+      "file": "invoices/export.py",
+      "line": 22,
+      "snippet": "return db.execute(f\"SELECT * FROM customers WHERE name = '{name}'\").fetchone()",
+      "fix": "Use parameterized queries.",
+      "source": "rule",
+      "explanation": "SQL built with string formatting on an added line in invoices/export.py.",
+      "dismissed": false
+     },
+     {
+      "id": "SEC009-invoices/export.py:18",
+      "rule": "SEC009",
+      "title": "TLS verification disabled",
+      "severity": "medium",
+      "cwe": "CWE-295",
+      "file": "invoices/export.py",
+      "line": 18,
+      "snippet": "return urllib.request.urlopen(req, context=ssl._create_unverified_context())",
+      "fix": "Keep certificate verification on; trust a custom CA bundle if needed.",
+      "source": "rule",
+      "explanation": "TLS verification disabled on an added line in invoices/export.py.",
+      "dismissed": false
+     }
+    ],
+    "files": {
+     "PR_DESCRIPTION.md": "# Add percentage and bulk discounts (+1 more)\n\nThis PR changes 2 files (python) with 55 additions and 0 deletions. Commits: Upload invoices to the accounting system; Add percentage and bulk discounts.\n\n## Changes\n- Add `invoices/export.py` (upload, find_customer), +22/-0\n- Update `invoices/pricing.py` (subtotal, apply_discount, bulk_tier), +33/-0\n\n## Risk: high\n- Code changed with no test changes in the diff\n- 3 open critical or high security finding(s)\n\n## Security review\n| Severity | Finding | Location | Fix |\n|---|---|---|---|\n| 🟠 high | Hardcoded password or secret (CWE-798) | `invoices/export.py:7` | Read the value from configuration or a secrets manager instead of source code. |\n| 🟠 high | Shell command built with shell=True (CWE-78) | `invoices/export.py:11` | Pass an argument list and leave shell=False. |\n| 🟠 high | SQL built with string formatting (CWE-89) | `invoices/export.py:22` | Use parameterized queries. |\n| 🟡 medium | TLS verification disabled (CWE-295) | `invoices/export.py:18` | Keep certificate verification on; trust a custom CA bundle if needed. |\n\n## Generated tests\n- `tests/generated/test_invoices_export.py` for `invoices/export.py`: passing (2 passed), 1 attempt(s)\n- `tests/generated/test_invoices_pricing.py` for `invoices/pricing.py`: passing (7 passed, 1 xfailed), 2 attempt(s)\n  - Suspected bug: `test_bulk_tier_example_3`\n\n## How to test\n- Run the unit test suite\n- Exercise the changed code paths locally\n\n## Reviewer checklist\n- [ ] Behavior matches the PR title and description\n- [ ] New Python functions handle invalid input and empty values\n- [ ] Generated tests are reviewed and committed, or tests are added by hand\n\n_Prepared by AI-Native SDLC Orchestrator and approved by a human reviewer._\n",
+     "tests/generated/test_invoices_export.py": "import inspect\n\nimport pytest\n\nimport invoices.export as export\n\n\ndef test_upload_signature():\n    assert callable(export.upload)\n    assert list(inspect.signature(export.upload).parameters) == ['invoice_path', 'customer']\n\ndef test_find_customer_signature():\n    assert callable(export.find_customer)\n    assert list(inspect.signature(export.find_customer).parameters) == ['db', 'name']\n",
+     "tests/generated/test_invoices_pricing.py": "import inspect\n\nimport pytest\n\nimport invoices.pricing as pricing\n\n\ndef test_apply_discount_example_1():\n    assert pricing.apply_discount(200, 10) == 180.0\n\ndef test_apply_discount_example_2():\n    assert pricing.apply_discount(50, 0) == 50.0\n\ndef test_apply_discount_example_3():\n    with pytest.raises(ValueError):\n        pricing.apply_discount(100, 150)\n\ndef test_apply_discount_signature():\n    assert callable(pricing.apply_discount)\n    assert list(inspect.signature(pricing.apply_discount).parameters) == ['amount', 'percent']\n\ndef test_bulk_tier_example_1():\n    assert pricing.bulk_tier(9) == 0\n\ndef test_bulk_tier_example_2():\n    assert pricing.bulk_tier(10) == 5\n\n@pytest.mark.xfail(reason=\"Fails against the docstring example; likely a bug in the code under test\", strict=True)\ndef test_bulk_tier_example_3():\n    assert pricing.bulk_tier(50) == 10\n\ndef test_bulk_tier_signature():\n    assert callable(pricing.bulk_tier)\n    assert list(inspect.signature(pricing.bulk_tier).parameters) == ['quantity']\n",
+     "security-report.json": "[\n  {\n    \"id\": \"SEC003-invoices/export.py:7\",\n    \"rule\": \"SEC003\",\n    \"title\": \"Hardcoded password or secret\",\n    \"severity\": \"high\",\n    \"cwe\": \"CWE-798\",\n    \"file\": \"invoices/export.py\",\n    \"line\": 7,\n    \"snippet\": \"ACCOUNTING_API_KEY = \\\"sk_live_51Hq8x2Yb7cK9pLmN0\\\"\",\n    \"fix\": \"Read the value from configuration or a secrets manager instead of source code.\",\n    \"source\": \"rule\",\n    \"explanation\": \"Hardcoded password or secret on an added line in invoices/export.py.\",\n    \"dismissed\": false\n  },\n  {\n    \"id\": \"SEC004-invoices/export.py:11\",\n    \"rule\": \"SEC004\",\n    \"title\": \"Shell command built with shell=True\",\n    \"severity\": \"high\",\n    \"cwe\": \"CWE-78\",\n    \"file\": \"invoices/export.py\",\n    \"line\": 11,\n    \"snippet\": \"subprocess.run(f\\\"gzip -k {invoice_path}\\\", shell=True, check=True)\",\n    \"fix\": \"Pass an argument list and leave shell=False.\",\n    \"source\": \"rule\",\n    \"explanation\": \"Shell command built with shell=True on an added line in invoices/export.py.\",\n    \"dismissed\": false\n  },\n  {\n    \"id\": \"SEC007-invoices/export.py:22\",\n    \"rule\": \"SEC007\",\n    \"title\": \"SQL built with string formatting\",\n    \"severity\": \"high\",\n    \"cwe\": \"CWE-89\",\n    \"file\": \"invoices/export.py\",\n    \"line\": 22,\n    \"snippet\": \"return db.execute(f\\\"SELECT * FROM customers WHERE name = '{name}'\\\").fetchone()\",\n    \"fix\": \"Use parameterized queries.\",\n    \"source\": \"rule\",\n    \"explanation\": \"SQL built with string formatting on an added line in invoices/export.py.\",\n    \"dismissed\": false\n  },\n  {\n    \"id\": \"SEC009-invoices/export.py:18\",\n    \"rule\": \"SEC009\",\n    \"title\": \"TLS verification disabled\",\n    \"severity\": \"medium\",\n    \"cwe\": \"CWE-295\",\n    \"file\": \"invoices/export.py\",\n    \"line\": 18,\n    \"snippet\": \"return urllib.request.urlopen(req, context=ssl._create_unverified_context())\",\n    \"fix\": \"Keep certificate verification on; trust a custom CA bundle if needed.\",\n    \"source\": \"rule\",\n    \"explanation\": \"TLS verification disabled on an added line in invoices/export.py.\",\n    \"dismissed\": false\n  }\n]"
+    },
+    "open_findings": 4,
+    "tests_passing": 2
+   }
+  },
+  {
+   "name": "approve with edits",
+   "review": {
+    "decision": "approve",
+    "title": "Reviewed by a human ✓",
+    "note": "Rotate the key before merging. Looks good otherwise ✓",
+    "dismissed": [
+     "SEC003-invoices/export.py:7"
+    ],
+    "include_tests": false,
+    "apply_tests": false
+   },
+   "expected": {
+    "approved": true,
+    "summary": {
+     "title": "Reviewed by a human ✓",
+     "summary": "This PR changes 2 files (python) with 55 additions and 0 deletions. Commits: Upload invoices to the accounting system; Add percentage and bulk discounts.",
+     "changes": [
+      "Add `invoices/export.py` (upload, find_customer), +22/-0",
+      "Update `invoices/pricing.py` (subtotal, apply_discount, bulk_tier), +33/-0"
+     ],
+     "risk": "high",
+     "risk_reasons": [
+      "Code changed with no test changes in the diff",
+      "2 open critical or high security finding(s)"
+     ],
+     "testing_notes": [
+      "Run the unit test suite",
+      "Exercise the changed code paths locally"
+     ],
+     "reviewer_checklist": [
+      "Behavior matches the PR title and description",
+      "New Python functions handle invalid input and empty values",
+      "Generated tests are reviewed and committed, or tests are added by hand"
+     ],
+     "reasoning": "Risk is medium because: Code changed with no test changes in the diff."
+    },
+    "findings": [
+     {
+      "id": "SEC003-invoices/export.py:7",
+      "rule": "SEC003",
+      "title": "Hardcoded password or secret",
+      "severity": "high",
+      "cwe": "CWE-798",
+      "file": "invoices/export.py",
+      "line": 7,
+      "snippet": "ACCOUNTING_API_KEY = \"sk_live_51Hq8x2Yb7cK9pLmN0\"",
+      "fix": "Read the value from configuration or a secrets manager instead of source code.",
+      "source": "rule",
+      "explanation": "Hardcoded password or secret on an added line in invoices/export.py.",
+      "dismissed": true
+     },
+     {
+      "id": "SEC004-invoices/export.py:11",
+      "rule": "SEC004",
+      "title": "Shell command built with shell=True",
+      "severity": "high",
+      "cwe": "CWE-78",
+      "file": "invoices/export.py",
+      "line": 11,
+      "snippet": "subprocess.run(f\"gzip -k {invoice_path}\", shell=True, check=True)",
+      "fix": "Pass an argument list and leave shell=False.",
+      "source": "rule",
+      "explanation": "Shell command built with shell=True on an added line in invoices/export.py.",
+      "dismissed": false
+     },
+     {
+      "id": "SEC007-invoices/export.py:22",
+      "rule": "SEC007",
+      "title": "SQL built with string formatting",
+      "severity": "high",
+      "cwe": "CWE-89",
+      "file": "invoices/export.py",
+      "line": 22,
+      "snippet": "return db.execute(f\"SELECT * FROM customers WHERE name = '{name}'\").fetchone()",
+      "fix": "Use parameterized queries.",
+      "source": "rule",
+      "explanation": "SQL built with string formatting on an added line in invoices/export.py.",
+      "dismissed": false
+     },
+     {
+      "id": "SEC009-invoices/export.py:18",
+      "rule": "SEC009",
+      "title": "TLS verification disabled",
+      "severity": "medium",
+      "cwe": "CWE-295",
+      "file": "invoices/export.py",
+      "line": 18,
+      "snippet": "return urllib.request.urlopen(req, context=ssl._create_unverified_context())",
+      "fix": "Keep certificate verification on; trust a custom CA bundle if needed.",
+      "source": "rule",
+      "explanation": "TLS verification disabled on an added line in invoices/export.py.",
+      "dismissed": false
+     }
+    ],
+    "files": {
+     "PR_DESCRIPTION.md": "# Reviewed by a human ✓\n\nThis PR changes 2 files (python) with 55 additions and 0 deletions. Commits: Upload invoices to the accounting system; Add percentage and bulk discounts.\n\n## Changes\n- Add `invoices/export.py` (upload, find_customer), +22/-0\n- Update `invoices/pricing.py` (subtotal, apply_discount, bulk_tier), +33/-0\n\n## Risk: high\n- Code changed with no test changes in the diff\n- 2 open critical or high security finding(s)\n\n## Security review\n| Severity | Finding | Location | Fix |\n|---|---|---|---|\n| 🟠 high | Shell command built with shell=True (CWE-78) | `invoices/export.py:11` | Pass an argument list and leave shell=False. |\n| 🟠 high | SQL built with string formatting (CWE-89) | `invoices/export.py:22` | Use parameterized queries. |\n| 🟡 medium | TLS verification disabled (CWE-295) | `invoices/export.py:18` | Keep certificate verification on; trust a custom CA bundle if needed. |\n\n_1 finding(s) reviewed and dismissed._\n\n## Generated tests\n- `tests/generated/test_invoices_export.py` for `invoices/export.py`: passing (2 passed), 1 attempt(s)\n- `tests/generated/test_invoices_pricing.py` for `invoices/pricing.py`: passing (7 passed, 1 xfailed), 2 attempt(s)\n  - Suspected bug: `test_bulk_tier_example_3`\n\n## How to test\n- Run the unit test suite\n- Exercise the changed code paths locally\n\n## Reviewer checklist\n- [ ] Behavior matches the PR title and description\n- [ ] New Python functions handle invalid input and empty values\n- [ ] Generated tests are reviewed and committed, or tests are added by hand\n\n## Reviewer note\nRotate the key before merging. Looks good otherwise ✓\n\n_Prepared by AI-Native SDLC Orchestrator and approved by a human reviewer._\n",
+     "security-report.json": "[\n  {\n    \"id\": \"SEC003-invoices/export.py:7\",\n    \"rule\": \"SEC003\",\n    \"title\": \"Hardcoded password or secret\",\n    \"severity\": \"high\",\n    \"cwe\": \"CWE-798\",\n    \"file\": \"invoices/export.py\",\n    \"line\": 7,\n    \"snippet\": \"ACCOUNTING_API_KEY = \\\"sk_live_51Hq8x2Yb7cK9pLmN0\\\"\",\n    \"fix\": \"Read the value from configuration or a secrets manager instead of source code.\",\n    \"source\": \"rule\",\n    \"explanation\": \"Hardcoded password or secret on an added line in invoices/export.py.\",\n    \"dismissed\": true\n  },\n  {\n    \"id\": \"SEC004-invoices/export.py:11\",\n    \"rule\": \"SEC004\",\n    \"title\": \"Shell command built with shell=True\",\n    \"severity\": \"high\",\n    \"cwe\": \"CWE-78\",\n    \"file\": \"invoices/export.py\",\n    \"line\": 11,\n    \"snippet\": \"subprocess.run(f\\\"gzip -k {invoice_path}\\\", shell=True, check=True)\",\n    \"fix\": \"Pass an argument list and leave shell=False.\",\n    \"source\": \"rule\",\n    \"explanation\": \"Shell command built with shell=True on an added line in invoices/export.py.\",\n    \"dismissed\": false\n  },\n  {\n    \"id\": \"SEC007-invoices/export.py:22\",\n    \"rule\": \"SEC007\",\n    \"title\": \"SQL built with string formatting\",\n    \"severity\": \"high\",\n    \"cwe\": \"CWE-89\",\n    \"file\": \"invoices/export.py\",\n    \"line\": 22,\n    \"snippet\": \"return db.execute(f\\\"SELECT * FROM customers WHERE name = '{name}'\\\").fetchone()\",\n    \"fix\": \"Use parameterized queries.\",\n    \"source\": \"rule\",\n    \"explanation\": \"SQL built with string formatting on an added line in invoices/export.py.\",\n    \"dismissed\": false\n  },\n  {\n    \"id\": \"SEC009-invoices/export.py:18\",\n    \"rule\": \"SEC009\",\n    \"title\": \"TLS verification disabled\",\n    \"severity\": \"medium\",\n    \"cwe\": \"CWE-295\",\n    \"file\": \"invoices/export.py\",\n    \"line\": 18,\n    \"snippet\": \"return urllib.request.urlopen(req, context=ssl._create_unverified_context())\",\n    \"fix\": \"Keep certificate verification on; trust a custom CA bundle if needed.\",\n    \"source\": \"rule\",\n    \"explanation\": \"TLS verification disabled on an added line in invoices/export.py.\",\n    \"dismissed\": false\n  }\n]"
+    },
+    "open_findings": 3,
+    "tests_passing": 2
+   }
+  },
+  {
+   "name": "dismiss every finding",
+   "review": {
+    "decision": "approve",
+    "title": null,
+    "note": "",
+    "dismissed": [
+     "SEC003-invoices/export.py:7",
+     "SEC004-invoices/export.py:11",
+     "SEC007-invoices/export.py:22",
+     "SEC009-invoices/export.py:18"
+    ],
+    "include_tests": true,
+    "apply_tests": false
+   },
+   "expected": {
+    "approved": true,
+    "summary": {
+     "title": "Add percentage and bulk discounts (+1 more)",
+     "summary": "This PR changes 2 files (python) with 55 additions and 0 deletions. Commits: Upload invoices to the accounting system; Add percentage and bulk discounts.",
+     "changes": [
+      "Add `invoices/export.py` (upload, find_customer), +22/-0",
+      "Update `invoices/pricing.py` (subtotal, apply_discount, bulk_tier), +33/-0"
+     ],
+     "risk": "medium",
+     "risk_reasons": [
+      "Code changed with no test changes in the diff"
+     ],
+     "testing_notes": [
+      "Run the unit test suite",
+      "Exercise the changed code paths locally"
+     ],
+     "reviewer_checklist": [
+      "Behavior matches the PR title and description",
+      "New Python functions handle invalid input and empty values",
+      "Generated tests are reviewed and committed, or tests are added by hand"
+     ],
+     "reasoning": "Risk is medium because: Code changed with no test changes in the diff."
+    },
+    "findings": [
+     {
+      "id": "SEC003-invoices/export.py:7",
+      "rule": "SEC003",
+      "title": "Hardcoded password or secret",
+      "severity": "high",
+      "cwe": "CWE-798",
+      "file": "invoices/export.py",
+      "line": 7,
+      "snippet": "ACCOUNTING_API_KEY = \"sk_live_51Hq8x2Yb7cK9pLmN0\"",
+      "fix": "Read the value from configuration or a secrets manager instead of source code.",
+      "source": "rule",
+      "explanation": "Hardcoded password or secret on an added line in invoices/export.py.",
+      "dismissed": true
+     },
+     {
+      "id": "SEC004-invoices/export.py:11",
+      "rule": "SEC004",
+      "title": "Shell command built with shell=True",
+      "severity": "high",
+      "cwe": "CWE-78",
+      "file": "invoices/export.py",
+      "line": 11,
+      "snippet": "subprocess.run(f\"gzip -k {invoice_path}\", shell=True, check=True)",
+      "fix": "Pass an argument list and leave shell=False.",
+      "source": "rule",
+      "explanation": "Shell command built with shell=True on an added line in invoices/export.py.",
+      "dismissed": true
+     },
+     {
+      "id": "SEC007-invoices/export.py:22",
+      "rule": "SEC007",
+      "title": "SQL built with string formatting",
+      "severity": "high",
+      "cwe": "CWE-89",
+      "file": "invoices/export.py",
+      "line": 22,
+      "snippet": "return db.execute(f\"SELECT * FROM customers WHERE name = '{name}'\").fetchone()",
+      "fix": "Use parameterized queries.",
+      "source": "rule",
+      "explanation": "SQL built with string formatting on an added line in invoices/export.py.",
+      "dismissed": true
+     },
+     {
+      "id": "SEC009-invoices/export.py:18",
+      "rule": "SEC009",
+      "title": "TLS verification disabled",
+      "severity": "medium",
+      "cwe": "CWE-295",
+      "file": "invoices/export.py",
+      "line": 18,
+      "snippet": "return urllib.request.urlopen(req, context=ssl._create_unverified_context())",
+      "fix": "Keep certificate verification on; trust a custom CA bundle if needed.",
+      "source": "rule",
+      "explanation": "TLS verification disabled on an added line in invoices/export.py.",
+      "dismissed": true
+     }
+    ],
+    "files": {
+     "PR_DESCRIPTION.md": "# Add percentage and bulk discounts (+1 more)\n\nThis PR changes 2 files (python) with 55 additions and 0 deletions. Commits: Upload invoices to the accounting system; Add percentage and bulk discounts.\n\n## Changes\n- Add `invoices/export.py` (upload, find_customer), +22/-0\n- Update `invoices/pricing.py` (subtotal, apply_discount, bulk_tier), +33/-0\n\n## Risk: medium\n- Code changed with no test changes in the diff\n\n## Security review\nNo open findings.\n\n_4 finding(s) reviewed and dismissed._\n\n## Generated tests\n- `tests/generated/test_invoices_export.py` for `invoices/export.py`: passing (2 passed), 1 attempt(s)\n- `tests/generated/test_invoices_pricing.py` for `invoices/pricing.py`: passing (7 passed, 1 xfailed), 2 attempt(s)\n  - Suspected bug: `test_bulk_tier_example_3`\n\n## How to test\n- Run the unit test suite\n- Exercise the changed code paths locally\n\n## Reviewer checklist\n- [ ] Behavior matches the PR title and description\n- [ ] New Python functions handle invalid input and empty values\n- [ ] Generated tests are reviewed and committed, or tests are added by hand\n\n_Prepared by AI-Native SDLC Orchestrator and approved by a human reviewer._\n",
+     "tests/generated/test_invoices_export.py": "import inspect\n\nimport pytest\n\nimport invoices.export as export\n\n\ndef test_upload_signature():\n    assert callable(export.upload)\n    assert list(inspect.signature(export.upload).parameters) == ['invoice_path', 'customer']\n\ndef test_find_customer_signature():\n    assert callable(export.find_customer)\n    assert list(inspect.signature(export.find_customer).parameters) == ['db', 'name']\n",
+     "tests/generated/test_invoices_pricing.py": "import inspect\n\nimport pytest\n\nimport invoices.pricing as pricing\n\n\ndef test_apply_discount_example_1():\n    assert pricing.apply_discount(200, 10) == 180.0\n\ndef test_apply_discount_example_2():\n    assert pricing.apply_discount(50, 0) == 50.0\n\ndef test_apply_discount_example_3():\n    with pytest.raises(ValueError):\n        pricing.apply_discount(100, 150)\n\ndef test_apply_discount_signature():\n    assert callable(pricing.apply_discount)\n    assert list(inspect.signature(pricing.apply_discount).parameters) == ['amount', 'percent']\n\ndef test_bulk_tier_example_1():\n    assert pricing.bulk_tier(9) == 0\n\ndef test_bulk_tier_example_2():\n    assert pricing.bulk_tier(10) == 5\n\n@pytest.mark.xfail(reason=\"Fails against the docstring example; likely a bug in the code under test\", strict=True)\ndef test_bulk_tier_example_3():\n    assert pricing.bulk_tier(50) == 10\n\ndef test_bulk_tier_signature():\n    assert callable(pricing.bulk_tier)\n    assert list(inspect.signature(pricing.bulk_tier).parameters) == ['quantity']\n",
+     "security-report.json": "[\n  {\n    \"id\": \"SEC003-invoices/export.py:7\",\n    \"rule\": \"SEC003\",\n    \"title\": \"Hardcoded password or secret\",\n    \"severity\": \"high\",\n    \"cwe\": \"CWE-798\",\n    \"file\": \"invoices/export.py\",\n    \"line\": 7,\n    \"snippet\": \"ACCOUNTING_API_KEY = \\\"sk_live_51Hq8x2Yb7cK9pLmN0\\\"\",\n    \"fix\": \"Read the value from configuration or a secrets manager instead of source code.\",\n    \"source\": \"rule\",\n    \"explanation\": \"Hardcoded password or secret on an added line in invoices/export.py.\",\n    \"dismissed\": true\n  },\n  {\n    \"id\": \"SEC004-invoices/export.py:11\",\n    \"rule\": \"SEC004\",\n    \"title\": \"Shell command built with shell=True\",\n    \"severity\": \"high\",\n    \"cwe\": \"CWE-78\",\n    \"file\": \"invoices/export.py\",\n    \"line\": 11,\n    \"snippet\": \"subprocess.run(f\\\"gzip -k {invoice_path}\\\", shell=True, check=True)\",\n    \"fix\": \"Pass an argument list and leave shell=False.\",\n    \"source\": \"rule\",\n    \"explanation\": \"Shell command built with shell=True on an added line in invoices/export.py.\",\n    \"dismissed\": true\n  },\n  {\n    \"id\": \"SEC007-invoices/export.py:22\",\n    \"rule\": \"SEC007\",\n    \"title\": \"SQL built with string formatting\",\n    \"severity\": \"high\",\n    \"cwe\": \"CWE-89\",\n    \"file\": \"invoices/export.py\",\n    \"line\": 22,\n    \"snippet\": \"return db.execute(f\\\"SELECT * FROM customers WHERE name = '{name}'\\\").fetchone()\",\n    \"fix\": \"Use parameterized queries.\",\n    \"source\": \"rule\",\n    \"explanation\": \"SQL built with string formatting on an added line in invoices/export.py.\",\n    \"dismissed\": true\n  },\n  {\n    \"id\": \"SEC009-invoices/export.py:18\",\n    \"rule\": \"SEC009\",\n    \"title\": \"TLS verification disabled\",\n    \"severity\": \"medium\",\n    \"cwe\": \"CWE-295\",\n    \"file\": \"invoices/export.py\",\n    \"line\": 18,\n    \"snippet\": \"return urllib.request.urlopen(req, context=ssl._create_unverified_context())\",\n    \"fix\": \"Keep certificate verification on; trust a custom CA bundle if needed.\",\n    \"source\": \"rule\",\n    \"explanation\": \"TLS verification disabled on an added line in invoices/export.py.\",\n    \"dismissed\": true\n  }\n]"
+    },
+    "open_findings": 0,
+    "tests_passing": 2
+   }
+  },
+  {
+   "name": "reject",
+   "review": {
+    "decision": "reject",
+    "title": null,
+    "note": "Not ready yet.",
+    "dismissed": [],
+    "include_tests": true,
+    "apply_tests": false
+   },
+   "expected": {
+    "approved": false,
+    "summary": {
+     "title": "Add percentage and bulk discounts (+1 more)",
+     "summary": "This PR changes 2 files (python) with 55 additions and 0 deletions. Commits: Upload invoices to the accounting system; Add percentage and bulk discounts.",
+     "changes": [
+      "Add `invoices/export.py` (upload, find_customer), +22/-0",
+      "Update `invoices/pricing.py` (subtotal, apply_discount, bulk_tier), +33/-0"
+     ],
+     "risk": "high",
+     "risk_reasons": [
+      "Code changed with no test changes in the diff",
+      "3 open critical or high security finding(s)"
+     ],
+     "testing_notes": [
+      "Run the unit test suite",
+      "Exercise the changed code paths locally"
+     ],
+     "reviewer_checklist": [
+      "Behavior matches the PR title and description",
+      "New Python functions handle invalid input and empty values",
+      "Generated tests are reviewed and committed, or tests are added by hand"
+     ],
+     "reasoning": "Risk is medium because: Code changed with no test changes in the diff."
+    },
+    "findings": [
+     {
+      "id": "SEC003-invoices/export.py:7",
+      "rule": "SEC003",
+      "title": "Hardcoded password or secret",
+      "severity": "high",
+      "cwe": "CWE-798",
+      "file": "invoices/export.py",
+      "line": 7,
+      "snippet": "ACCOUNTING_API_KEY = \"sk_live_51Hq8x2Yb7cK9pLmN0\"",
+      "fix": "Read the value from configuration or a secrets manager instead of source code.",
+      "source": "rule",
+      "explanation": "Hardcoded password or secret on an added line in invoices/export.py.",
+      "dismissed": false
+     },
+     {
+      "id": "SEC004-invoices/export.py:11",
+      "rule": "SEC004",
+      "title": "Shell command built with shell=True",
+      "severity": "high",
+      "cwe": "CWE-78",
+      "file": "invoices/export.py",
+      "line": 11,
+      "snippet": "subprocess.run(f\"gzip -k {invoice_path}\", shell=True, check=True)",
+      "fix": "Pass an argument list and leave shell=False.",
+      "source": "rule",
+      "explanation": "Shell command built with shell=True on an added line in invoices/export.py.",
+      "dismissed": false
+     },
+     {
+      "id": "SEC007-invoices/export.py:22",
+      "rule": "SEC007",
+      "title": "SQL built with string formatting",
+      "severity": "high",
+      "cwe": "CWE-89",
+      "file": "invoices/export.py",
+      "line": 22,
+      "snippet": "return db.execute(f\"SELECT * FROM customers WHERE name = '{name}'\").fetchone()",
+      "fix": "Use parameterized queries.",
+      "source": "rule",
+      "explanation": "SQL built with string formatting on an added line in invoices/export.py.",
+      "dismissed": false
+     },
+     {
+      "id": "SEC009-invoices/export.py:18",
+      "rule": "SEC009",
+      "title": "TLS verification disabled",
+      "severity": "medium",
+      "cwe": "CWE-295",
+      "file": "invoices/export.py",
+      "line": 18,
+      "snippet": "return urllib.request.urlopen(req, context=ssl._create_unverified_context())",
+      "fix": "Keep certificate verification on; trust a custom CA bundle if needed.",
+      "source": "rule",
+      "explanation": "TLS verification disabled on an added line in invoices/export.py.",
+      "dismissed": false
+     }
+    ],
+    "files": {
+     "security-report.json": "[\n  {\n    \"id\": \"SEC003-invoices/export.py:7\",\n    \"rule\": \"SEC003\",\n    \"title\": \"Hardcoded password or secret\",\n    \"severity\": \"high\",\n    \"cwe\": \"CWE-798\",\n    \"file\": \"invoices/export.py\",\n    \"line\": 7,\n    \"snippet\": \"ACCOUNTING_API_KEY = \\\"sk_live_51Hq8x2Yb7cK9pLmN0\\\"\",\n    \"fix\": \"Read the value from configuration or a secrets manager instead of source code.\",\n    \"source\": \"rule\",\n    \"explanation\": \"Hardcoded password or secret on an added line in invoices/export.py.\",\n    \"dismissed\": false\n  },\n  {\n    \"id\": \"SEC004-invoices/export.py:11\",\n    \"rule\": \"SEC004\",\n    \"title\": \"Shell command built with shell=True\",\n    \"severity\": \"high\",\n    \"cwe\": \"CWE-78\",\n    \"file\": \"invoices/export.py\",\n    \"line\": 11,\n    \"snippet\": \"subprocess.run(f\\\"gzip -k {invoice_path}\\\", shell=True, check=True)\",\n    \"fix\": \"Pass an argument list and leave shell=False.\",\n    \"source\": \"rule\",\n    \"explanation\": \"Shell command built with shell=True on an added line in invoices/export.py.\",\n    \"dismissed\": false\n  },\n  {\n    \"id\": \"SEC007-invoices/export.py:22\",\n    \"rule\": \"SEC007\",\n    \"title\": \"SQL built with string formatting\",\n    \"severity\": \"high\",\n    \"cwe\": \"CWE-89\",\n    \"file\": \"invoices/export.py\",\n    \"line\": 22,\n    \"snippet\": \"return db.execute(f\\\"SELECT * FROM customers WHERE name = '{name}'\\\").fetchone()\",\n    \"fix\": \"Use parameterized queries.\",\n    \"source\": \"rule\",\n    \"explanation\": \"SQL built with string formatting on an added line in invoices/export.py.\",\n    \"dismissed\": false\n  },\n  {\n    \"id\": \"SEC009-invoices/export.py:18\",\n    \"rule\": \"SEC009\",\n    \"title\": \"TLS verification disabled\",\n    \"severity\": \"medium\",\n    \"cwe\": \"CWE-295\",\n    \"file\": \"invoices/export.py\",\n    \"line\": 18,\n    \"snippet\": \"return urllib.request.urlopen(req, context=ssl._create_unverified_context())\",\n    \"fix\": \"Keep certificate verification on; trust a custom CA bundle if needed.\",\n    \"source\": \"rule\",\n    \"explanation\": \"TLS verification disabled on an added line in invoices/export.py.\",\n    \"dismissed\": false\n  }\n]"
+    },
+    "open_findings": 4,
+    "tests_passing": 2
+   }
+  }
+ ]
+}
