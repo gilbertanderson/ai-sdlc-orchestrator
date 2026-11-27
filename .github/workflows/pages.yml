@@ -1,0 +1,66 @@
+name: Deploy the browser demo
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the backend
+        working-directory: backend
+        run: pip install -e ".[dev]"
+      # The offline model is deterministic, so the demo always shows this commit's agents.
+      # Recordings made with Bedrock can't be re-made here and are deployed as committed.
+      - name: Re-record the offline runs from this commit's code
+        working-directory: backend
+        run: >-
+          sdlc-orchestrator record --scenario invoicing --scenario clean
+          --out-dir ../frontend/public/runs --golden-dir ../frontend/src/demo/golden
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install the dashboard
+        working-directory: frontend
+        run: npm ci
+      - name: Check the browser's output code against the new recordings
+        working-directory: frontend
+        run: npm test
+      - name: Build the demo
+        working-directory: frontend
+        run: npm run build:demo
+      - name: Browser tests and screenshots
+        working-directory: frontend
+        run: |
+          npx playwright install --with-deps chromium
+          SCREENSHOT_DIR=dist-demo npm run e2e
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/dist-demo
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

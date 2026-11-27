@@ -11,3 +11,4 @@ frontend/dist/
 *.tsbuildinfo
 frontend/test-results/
 frontend/playwright-report/
+frontend/dist-demo/
